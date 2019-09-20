@@ -6,6 +6,7 @@ import (
     "net/http"
     "log"
     "os"
+    "time"
 )
 
 func getEnv(key, fallback string) string {
@@ -17,23 +18,23 @@ func getEnv(key, fallback string) string {
 }
 
 func main() {
+
     http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
         fmt.Fprintf(w, "===============================================\n")
-        fmt.Fprintf(w, "Requested path    is: %s\n", r.URL.Path)
-        fmt.Fprintf(w, "The HOST IP       is: %s\n", os.Getenv("HOST_IP"))
-        fmt.Fprintf(w, "The POD IP        is: %s\n", os.Getenv("POD_IP"))
-        fmt.Fprintf(w, "The POD NAME      is: %s\n", os.Getenv("POD_NAME"))
-        fmt.Fprintf(w, "The POD NAMESPACE is: %s\n\n", os.Getenv("POD_NAMESPACE"))
+        fmt.Fprintf(w, "Request time   : %s\n", time.Unix(0, time.Now().UnixNano())) 
+        fmt.Fprintf(w, "Requested path : %s\n", r.URL.Path)
+        fmt.Fprintf(w, "Host IP        : %s\n", os.Getenv("HOST_IP"))
+        fmt.Fprintf(w, "Pod IP         : %s\n", os.Getenv("POD_IP"))
+        fmt.Fprintf(w, "Pod Name       : %s\n", os.Getenv("POD_NAME"))
+        fmt.Fprintf(w, "Pod Namespace  : %s\n", os.Getenv("POD_NAMESPACE"))
+        fmt.Fprintf(w, "Host           : %s\n", r.Host)
+        fmt.Fprintf(w, "RemoteAddr     : %s\n", r.RemoteAddr)
         fmt.Fprintf(w, "===============================================\n")
 
-        for k, v := range r.Header {
-           fmt.Fprintf(w, "%q: %q\n", k, v)
-        }
+        //for k, v := range r.Header {
+        //   fmt.Fprintf(w, "%q: %q\n", k, v)
+        //}
 
-        fmt.Fprintf(w, "===============================================\n")
-        fmt.Fprintf(w, "Host       = %q\n", r.Host)
-        fmt.Fprintf(w, "RemoteAddr = %q\n", r.RemoteAddr)
-        fmt.Fprintf(w, "===============================================\n")
         upstreamService := getEnv("UPSTREAM_SERVICE", "http://httpbin.org/headers") 
         response, err := http.Get(upstreamService)
         if err != nil {
@@ -45,7 +46,6 @@ func main() {
           fmt.Fprintf(w, "Response ends from %s\n", upstreamService)
         }
     })
-
 
     log.Fatal(http.ListenAndServe(":8080", nil))
 }

@@ -7,28 +7,27 @@ import (
     "log"
     "encoding/json"
     "os"
+    "time"
     "io/ioutil"
 )
 
 func main() {
     http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
         fmt.Fprintf(w, "===============================================\n")
-        fmt.Fprintf(w, "Requested path    is: %s\n", r.URL.Path)
-        fmt.Fprintf(w, "The HOST IP       is: %s\n", os.Getenv("HOST_IP"))
-        fmt.Fprintf(w, "The POD IP        is: %s\n", os.Getenv("POD_IP"))
-        fmt.Fprintf(w, "The POD NAME      is: %s\n", os.Getenv("POD_NAME"))
-        fmt.Fprintf(w, "The POD NAMESPACE is: %s\n\n", os.Getenv("POD_NAMESPACE"))
+        fmt.Fprintf(w, "Request time   : %s\n", time.Unix(0, time.Now().UnixNano())) 
+        fmt.Fprintf(w, "Requested path : %s\n", r.URL.Path)
         fmt.Fprintf(w, "===============================================\n")
 
-        for k, v := range r.Header {
-           fmt.Fprintf(w, "%q: %q\n", k, v)
-        }
-        fmt.Fprintf(w, "===============================================\n")
-        fmt.Fprintf(w, "Host       = %q\n", r.Host)
-        fmt.Fprintf(w, "RemoteAddr = %q\n", r.RemoteAddr)
-        fmt.Fprintf(w, "===============================================\n")
+        //for k, v := range r.Header {
+        //   fmt.Fprintf(w, "%q: %q\n", k, v)
+        //}
 
-        jsonData := map[string]string{"POD_IP": os.Getenv("POD_IP") , "POD_NAME": os.Getenv("POD_NAME") }
+        jsonData := map[string]string{"POD_IP": os.Getenv("POD_IP"), 
+                                      "POD_NAME": os.Getenv("POD_NAME"),
+                                      "POD_NAMESPACE": os.Getenv("POD_NAMESPACE"),
+                                      "HOST_IP": os.Getenv("HOST_IP"),
+                                      "HOST": r.Host,
+                                      "REMOTE_ADDR": r.RemoteAddr}
         jsonValue, _ := json.Marshal(jsonData)
         response, err := http.Post("http://httpbin.org/post", "application/json", bytes.NewBuffer(jsonValue))
         if err != nil {
