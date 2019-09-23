@@ -12,6 +12,15 @@ import (
 )
 
 func main() {
+
+    log.SetFlags(log.Ldate | log.Lmicroseconds)
+    log.Println("main started")
+
+    http.HandleFunc("/health", func(w http.ResponseWriter, r *http.Request) {
+        log.Printls("In /health")
+        fmt.Fprintf(w, "OK")
+    })
+
     http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
         fmt.Fprintf(w, "===============================================\n")
         fmt.Fprintf(w, "Request time   : %s\n", time.Unix(0, time.Now().UnixNano())) 

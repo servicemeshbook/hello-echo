@@ -9,13 +9,14 @@ COPY . .
 
 RUN go get -d -v
 
-RUN CGO_ENABLED=0 GOOS=linux go build -ldflags="-w -s" -a -installsuffix cgo -o /admin .
+RUN CGO_ENABLED=0 GOOS=linux go build -ldflags="-w -s" -a -installsuffix cgo -o /hello-echo .
 
 FROM scratch
-COPY --from=builder /admin /admin
+COPY --from=builder /hello-echo /hello-echo
 COPY --from=builder /etc/passwd /etc/passwd
 
 EXPOSE 8080
 
 USER appuser
-ENTRYPOINT ["/admin"]
+ENTRYPOINT ["/hello-echo"]
+#CMD ["/hello-echo"]

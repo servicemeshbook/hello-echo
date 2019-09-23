@@ -1,7 +1,7 @@
 #VERSION=`git rev-parse HEAD`
 VERSION=1.0
 REPO=vikramkhatri
-IMAGE=hello-admin
+IMAGE=hello-echo
 TAG=$(REPO)/$(IMAGE):$(VERSION)
 
 .PHONY: help
